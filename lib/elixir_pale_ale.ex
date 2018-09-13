@@ -15,9 +15,4 @@ defmodule ForthAle do
 
   def ok_bin_result(response), do: response
 
-  def byte_list(data) do
-    for i <- data, into: "" do
-      <<i::size(1)-unit(1)>>
-    end
-  end
 end
