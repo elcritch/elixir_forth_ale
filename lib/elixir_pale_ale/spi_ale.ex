@@ -4,45 +4,28 @@ defmodule ForthAle.SPI do
 end
 
 defimpl HalIO, for: ForthAle.SPI do
-
-  @spec read(self :: pid(), count :: non_neg_integer() ) :: {:ok, binary} | {:error, term}
+  @spec read(self :: pid(), count :: non_neg_integer()) :: {:ok, binary} | {:error, term}
   def read(device, read_count) do
-    read_data = :binary.copy(<<0>>, read_count)
+    Serial.write(device.pid, [read_count, device.spi_dev_name, "|spi-read"])
+    value = Serial.read(device.pid, 3) |> :binary.list_to_bin()
 
-    GPIO.write(device.select_pin, 0)
-
-    res =
-      SPI.transfer(device.pid, read_data)
-      |> ForthAle.ok_bin_result()
-
-    GPIO.write(device.select_pin, 1)
-
-    res
+    {:ok, value}
   end
 
-  @spec write(self :: pid(), data :: binary() ) :: :ok | {:error, term}
+  @spec write(self :: pid(), data :: binary()) :: :ok | {:error, term}
   def write(device, value) do
-    GPIO.write(device.select_pin, 1)
-
-    res =
-      SPI.transfer(device.pid, value)
-      |> ForthAle.ok_bin()
-
-    GPIO.write(device.select_pin, 1)
-
-    res
+    bytelst = :binary.bin_to_list(value)
+    bytecnt = Enum.count(bytelst)
+    Serial.write(device.pid, [bytelst, bytecnt, device.spi_dev_name, "|spi-write"])
+    :ok
   end
 
-  @spec xfer(self :: pid(), data :: binary() ) :: {:ok, binary} | {:error, term}
+  @spec xfer(self :: pid(), data :: binary()) :: {:ok, binary} | {:error, term}
   def xfer(device, value) do
-    GPIO.write(device.select_pin, 1)
-
-    res =
-      SPI.transfer(device.pid, value)
-      |> ForthAle.ok_bin_result()
-
-    GPIO.write(device.select_pin, 1)
-
-    res
+    bytelst = :binary.bin_to_list(value)
+    bytecnt = Enum.count(bytelst)
+    Serial.write(device.pid, [bytelst, bytecnt, device.spi_dev_name, "|spi-write"])
+    [value] = Serial.read(device.pid, 1)
+    {:ok, value}
   end
 end
