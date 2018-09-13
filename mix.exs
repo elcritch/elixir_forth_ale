@@ -28,5 +28,4 @@ defmodule ForthAle.MixProject do
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
     ]
   end
-
 end

@@ -1,10 +1,9 @@
-
-defmodule ForthAle.SPI.CustomCS do
+defmodule ForthAle.SPI do
   @enforce_keys [:pid, :cs]
   defstruct @enforce_keys
 end
 
-defimpl HalIO, for: ForthAle.SPI.CustomCS do
+defimpl HalIO, for: ForthAle.SPI do
   alias ElixirALE.SPI
   alias ElixirALE.GPIO
 
@@ -13,8 +12,9 @@ defimpl HalIO, for: ForthAle.SPI.CustomCS do
 
     GPIO.write(device.select_pin, 0)
 
-    res = SPI.transfer(device.pid, read_data)
-    |> ForthAle.ok_bin_result()
+    res =
+      SPI.transfer(device.pid, read_data)
+      |> ForthAle.ok_bin_result()
 
     GPIO.write(device.select_pin, 1)
 
@@ -23,8 +23,11 @@ defimpl HalIO, for: ForthAle.SPI.CustomCS do
 
   def write(device, value) do
     GPIO.write(device.select_pin, 1)
-    res = SPI.transfer(device.pid, value)
-    |> ForthAle.ok_bin()
+
+    res =
+      SPI.transfer(device.pid, value)
+      |> ForthAle.ok_bin()
+
     GPIO.write(device.select_pin, 1)
 
     res
@@ -32,11 +35,13 @@ defimpl HalIO, for: ForthAle.SPI.CustomCS do
 
   def xfer(device, value) do
     GPIO.write(device.select_pin, 1)
-    res = SPI.transfer(device.pid, value)
-    |> ForthAle.ok_bin_result()
+
+    res =
+      SPI.transfer(device.pid, value)
+      |> ForthAle.ok_bin_result()
+
     GPIO.write(device.select_pin, 1)
 
     res
   end
 end
-
