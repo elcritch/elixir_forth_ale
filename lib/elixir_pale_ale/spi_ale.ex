@@ -4,8 +4,6 @@ defmodule ForthAle.SPI do
 end
 
 defimpl HalIO, for: ForthAle.SPI do
-  alias ElixirALE.SPI
-  alias ElixirALE.GPIO
 
   def read(device, read_count) do
     read_data = :binary.copy(<<0>>, read_count)
