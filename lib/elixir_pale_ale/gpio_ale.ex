@@ -4,8 +4,8 @@ defmodule ForthAle.GPIO do
 end
 
 defimpl HalIO, for: ForthAle.GPIO do
-  alias ElixirALE.GPIO
 
+  @spec read(self :: pid(), count :: non_neg_integer() ) :: {:ok, binary} | {:error, term}
   def read(device, _read_count \\ 1) do
     case GPIO.read(device.pid) do
       res when is_integer(res) ->
@@ -20,6 +20,7 @@ defimpl HalIO, for: ForthAle.GPIO do
     write(device, :binary.at(value, 0))
   end
 
+  @spec write(self :: pid(), data :: binary() ) :: :ok | {:error, term}
   def write(device, value) do
     GPIO.write(device.pid, value)
   end
@@ -28,6 +29,7 @@ defimpl HalIO, for: ForthAle.GPIO do
     xfer(device, :binary.at(value, 0))
   end
 
+  @spec xfer(self :: pid(), data :: binary() ) :: {:ok, binary} | {:error, term}
   def xfer(device, value) do
     rres = GPIO.read(device.pid)
     wres = GPIO.write(device.pid, value)
